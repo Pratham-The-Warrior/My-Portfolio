@@ -44,7 +44,7 @@ Whether it's building smart applications, visualizing financial insights, or exp
 
 - 🌐 Portfolio:
 - 📧 Email: prathamsarda1234@gmail.com
-- 🐦 Twitter: [@prathamwarrior](https://twitter.com/ek_insaan)
+- 🐦 Twitter: [@Ek_insaann](https://x.com/Ek_insaann?t=MwoTlcaEG1fHpi1Pq5mqag&s=08)
 - 💼 LinkedIn: [Pratham](https://www.linkedin.com/in/pratham-sarda-8a6a88318?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app)
 
 ---
