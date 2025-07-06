@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState, useEffect, useRef, Suspense } from "react"
-import { Canvas, useFrame } from "@react-three/fiber"
-import { Torus, Float } from "@react-three/drei"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+import type React from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { Torus, Float } from "@react-three/drei";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Github,
   Linkedin,
@@ -22,44 +22,44 @@ import {
   TrendingUp,
   Activity,
   Gauge,
-} from "lucide-react"
-import type * as THREE from "three"
-import ClickSpark from "@/components/click-spark"
+} from "lucide-react";
+import type * as THREE from "three";
+import ClickSpark from "@/components/click-spark";
 
 // 3D Background Components
 function ParticleField() {
-  const particlesRef = useRef<THREE.Points>(null)
-  const particleCount = 800
+  const particlesRef = useRef<THREE.Points>(null);
+  const particleCount = 800;
 
-  const positions = new Float32Array(particleCount * 3)
-  const colors = new Float32Array(particleCount * 3)
+  const positions = new Float32Array(particleCount * 3);
+  const colors = new Float32Array(particleCount * 3);
 
   for (let i = 0; i < particleCount; i++) {
-    positions[i * 3] = (Math.random() - 0.5) * 40
-    positions[i * 3 + 1] = (Math.random() - 0.5) * 40
-    positions[i * 3 + 2] = (Math.random() - 0.5) * 40
+    positions[i * 3] = (Math.random() - 0.5) * 40;
+    positions[i * 3 + 1] = (Math.random() - 0.5) * 40;
+    positions[i * 3 + 2] = (Math.random() - 0.5) * 40;
 
-    colors[i * 3] = 0.6 + Math.random() * 0.4
-    colors[i * 3 + 1] = 0.4 + Math.random() * 0.4
-    colors[i * 3 + 2] = 0.9 + Math.random() * 0.1
+    colors[i * 3] = 0.6 + Math.random() * 0.4;
+    colors[i * 3 + 1] = 0.4 + Math.random() * 0.4;
+    colors[i * 3 + 2] = 0.9 + Math.random() * 0.1;
   }
 
   useFrame(() => {
     if (particlesRef.current) {
-      particlesRef.current.rotation.x += 0.0005
-      particlesRef.current.rotation.y += 0.001
+      particlesRef.current.rotation.x += 0.0005;
+      particlesRef.current.rotation.y += 0.001;
     }
-  })
+  });
 
   return (
     <points ref={particlesRef}>
       <bufferGeometry>
-        <bufferAttribute attach="attributes-position" count={particleCount} array={positions} itemSize={3} />
-        <bufferAttribute attach="attributes-color" count={particleCount} array={colors} itemSize={3} />
+        <bufferAttribute attach="attributes-position" args={[positions, 3]} />
+        <bufferAttribute attach="attributes-color" args={[colors, 3]} />
       </bufferGeometry>
       <pointsMaterial size={0.08} vertexColors transparent opacity={0.7} />
     </points>
-  )
+  );
 }
 
 function Scene3D() {
@@ -70,45 +70,53 @@ function Scene3D() {
       <pointLight position={[-10, -10, -10]} intensity={0.4} color="#6366f1" />
       <ParticleField />
       <Float speed={1} rotationIntensity={0.5} floatIntensity={0.5}>
-        <Torus position={[0, 0, -15]} args={[8, 0.5, 16, 100]} rotation={[Math.PI / 4, 0, 0]}>
+        <Torus
+          position={[0, 0, -15]}
+          args={[8, 0.5, 16, 100]}
+          rotation={[Math.PI / 4, 0, 0]}
+        >
           <meshStandardMaterial color="#6366f1" transparent opacity={0.1} />
         </Torus>
       </Float>
     </>
-  )
+  );
 }
 
 export default function Portfolio() {
-  const [activeSection, setActiveSection] = useState("home")
-  const [scrollY, setScrollY] = useState(0)
+  const [activeSection, setActiveSection] = useState("home");
+  const [scrollY, setScrollY] = useState(0);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     projectType: "",
     message: "",
-  })
+  });
   const [formStatus, setFormStatus] = useState<{
-    type: "idle" | "loading" | "success" | "error"
-    message: string
-  }>({ type: "idle", message: "" })
+    type: "idle" | "loading" | "success" | "error";
+    message: string;
+  }>({ type: "idle", message: "" });
 
   useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY)
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
-    }))
-  }
+    }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setFormStatus({ type: "loading", message: "Sending your message..." })
+    e.preventDefault();
+    setFormStatus({ type: "loading", message: "Sending your message..." });
 
     try {
       const response = await fetch("/api/contact", {
@@ -117,33 +125,34 @@ export default function Portfolio() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
-      })
+      });
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (response.ok) {
         setFormStatus({
           type: "success",
-          message: "Message sent successfully! Check your email for confirmation.",
-        })
-        setFormData({ name: "", email: "", projectType: "", message: "" })
+          message:
+            "Message sent successfully! Check your email for confirmation.",
+        });
+        setFormData({ name: "", email: "", projectType: "", message: "" });
       } else {
         setFormStatus({
           type: "error",
           message: data.error || "Failed to send message. Please try again.",
-        })
+        });
       }
     } catch (error) {
       setFormStatus({
         type: "error",
         message: "Network error. Please check your connection and try again.",
-      })
+      });
     }
 
     setTimeout(() => {
-      setFormStatus({ type: "idle", message: "" })
-    }, 5000)
-  }
+      setFormStatus({ type: "idle", message: "" });
+    }, 5000);
+  };
 
   const projects = [
     {
@@ -164,12 +173,13 @@ export default function Portfolio() {
     },
     {
       title: "AI-Powered Code Assistant",
-      description: "Intelligent code completion and refactoring tool using transformer models and static analysis.",
+      description:
+        "Intelligent code completion and refactoring tool using transformer models and static analysis.",
       tech: ["TypeScript", "PyTorch", "WebAssembly", "LSP", "Tree-sitter"],
       metrics: "40% dev productivity boost",
       category: "AI/ML",
     },
-  ]
+  ];
 
   const ongoingProjects = [
     {
@@ -188,7 +198,8 @@ export default function Portfolio() {
     },
     {
       title: "EcoChain Network",
-      description: "Sustainable blockchain platform for carbon credit trading with zero-energy consensus mechanism.",
+      description:
+        "Sustainable blockchain platform for carbon credit trading with zero-energy consensus mechanism.",
       tech: ["Rust", "Substrate", "React", "GraphQL", "IPFS"],
       status: "Alpha Testing",
       progress: 60,
@@ -213,39 +224,39 @@ export default function Portfolio() {
       commits: 156,
       lastUpdate: "1 day ago",
     },
-  ]
+  ];
 
   const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId)
-    element?.scrollIntoView({ behavior: "smooth" })
-    setActiveSection(sectionId)
-  }
+    const element = document.getElementById(sectionId);
+    element?.scrollIntoView({ behavior: "smooth" });
+    setActiveSection(sectionId);
+  };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case "High":
-        return "text-red-400 bg-red-400/10 border-red-400/30"
+        return "text-red-400 bg-red-400/10 border-red-400/30";
       case "Medium":
-        return "text-yellow-400 bg-yellow-400/10 border-yellow-400/30"
+        return "text-yellow-400 bg-yellow-400/10 border-yellow-400/30";
       case "Low":
-        return "text-green-400 bg-green-400/10 border-green-400/30"
+        return "text-green-400 bg-green-400/10 border-green-400/30";
       default:
-        return "text-blue-400 bg-blue-400/10 border-blue-400/30"
+        return "text-blue-400 bg-blue-400/10 border-blue-400/30";
     }
-  }
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case "In Development":
-        return "text-blue-400 bg-blue-400/10 border-blue-400/30"
+        return "text-blue-400 bg-blue-400/10 border-blue-400/30";
       case "Alpha Testing":
-        return "text-purple-400 bg-purple-400/10 border-purple-400/30"
+        return "text-purple-400 bg-purple-400/10 border-purple-400/30";
       case "Research Phase":
-        return "text-orange-400 bg-orange-400/10 border-orange-400/30"
+        return "text-orange-400 bg-orange-400/10 border-orange-400/30";
       default:
-        return "text-gray-400 bg-gray-400/10 border-gray-400/30"
+        return "text-gray-400 bg-gray-400/10 border-gray-400/30";
     }
-  }
+  };
 
   return (
     <ClickSpark
@@ -276,17 +287,21 @@ export default function Portfolio() {
               </div>
               <div className="h-4 w-px bg-white/20"></div>
               <div className="flex space-x-6">
-                {["About", "Skills", "Projects", "Ongoing", "Contact"].map((item) => (
-                  <button
-                    key={item}
-                    onClick={() => scrollToSection(item.toLowerCase())}
-                    className={`text-sm font-medium transition-all duration-300 hover:text-blue-400 ${
-                      activeSection === item.toLowerCase() ? "text-blue-400" : "text-white/70"
-                    }`}
-                  >
-                    {item}
-                  </button>
-                ))}
+                {["About", "Skills", "Projects", "Ongoing", "Contact"].map(
+                  (item) => (
+                    <button
+                      key={item}
+                      onClick={() => scrollToSection(item.toLowerCase())}
+                      className={`text-sm font-medium transition-all duration-300 hover:text-blue-400 ${
+                        activeSection === item.toLowerCase()
+                          ? "text-blue-400"
+                          : "text-white/70"
+                      }`}
+                    >
+                      {item}
+                    </button>
+                  )
+                )}
               </div>
             </div>
           </div>
@@ -295,7 +310,10 @@ export default function Portfolio() {
         {/* Content */}
         <div className="relative z-10">
           {/* Hero Section */}
-          <section id="home" className="min-h-screen flex items-center justify-center px-8">
+          <section
+            id="home"
+            className="min-h-screen flex items-center justify-center px-8"
+          >
             <div className="max-w-6xl mx-auto text-center">
               <div
                 className="transform transition-all duration-1000"
@@ -314,8 +332,9 @@ export default function Portfolio() {
                 </div>
 
                 <p className="text-lg md:text-xl text-white/80 max-w-3xl mx-auto mb-16 leading-relaxed">
-                  Building next-generation systems that scale. Specializing in distributed architectures,
-                  high-performance computing, and AI-driven solutions that power the future.
+                  Building next-generation systems that scale. Specializing in
+                  distributed architectures, high-performance computing, and
+                  AI-driven solutions that power the future.
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
@@ -354,22 +373,30 @@ export default function Portfolio() {
                   </h2>
                   <div className="space-y-6 text-lg text-white/80 leading-relaxed">
                     <p>
-                      Computer Science graduate with expertise in building scalable, high-performance systems. I
-                      architect solutions that handle millions of users while maintaining sub-millisecond response
-                      times.
+                      Computer Science graduate with expertise in building
+                      scalable, high-performance systems. I architect solutions
+                      that handle millions of users while maintaining
+                      sub-millisecond response times.
                     </p>
                     <p>
-                      My approach combines theoretical computer science foundations with practical engineering
-                      experience, focusing on system design, performance optimization, and cutting-edge technology
-                      integration.
+                      My approach combines theoretical computer science
+                      foundations with practical engineering experience,
+                      focusing on system design, performance optimization, and
+                      cutting-edge technology integration.
                     </p>
                     <p>
-                      Currently exploring the intersection of distributed systems and machine learning, building the
-                      infrastructure that powers next-generation AI applications.
+                      Currently exploring the intersection of distributed
+                      systems and machine learning, building the infrastructure
+                      that powers next-generation AI applications.
                     </p>
                   </div>
                   <div className="flex flex-wrap gap-3 mt-8">
-                    {["System Design", "Performance Engineering", "Distributed Systems", "AI/ML"].map((tag) => (
+                    {[
+                      "System Design",
+                      "Performance Engineering",
+                      "Distributed Systems",
+                      "AI/ML",
+                    ].map((tag) => (
                       <Badge
                         key={tag}
                         className="bg-white/10 text-white border-white/20 hover:bg-white/20 transition-colors px-4 py-2"
@@ -383,20 +410,34 @@ export default function Portfolio() {
                   <div className="bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-3xl p-8 backdrop-blur-sm border border-white/10">
                     <div className="grid grid-cols-2 gap-6">
                       <div className="text-center">
-                        <div className="text-3xl font-bold text-blue-400 mb-2">CS</div>
+                        <div className="text-3xl font-bold text-blue-400 mb-2">
+                          CS
+                        </div>
                         <div className="text-white/60 text-sm">Student</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-3xl font-bold text-purple-400 mb-2">20+</div>
-                        <div className="text-white/60 text-sm">Projects Built</div>
+                        <div className="text-3xl font-bold text-purple-400 mb-2">
+                          20+
+                        </div>
+                        <div className="text-white/60 text-sm">
+                          Projects Built
+                        </div>
                       </div>
                       <div className="text-center">
-                        <div className="text-3xl font-bold text-green-400 mb-2">24/7</div>
-                        <div className="text-white/60 text-sm">Learning Mode</div>
+                        <div className="text-3xl font-bold text-green-400 mb-2">
+                          24/7
+                        </div>
+                        <div className="text-white/60 text-sm">
+                          Learning Mode
+                        </div>
                       </div>
                       <div className="text-center">
-                        <div className="text-3xl font-bold text-orange-400 mb-2">∞</div>
-                        <div className="text-white/60 text-sm">Curiosity Level</div>
+                        <div className="text-3xl font-bold text-orange-400 mb-2">
+                          ∞
+                        </div>
+                        <div className="text-white/60 text-sm">
+                          Curiosity Level
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -427,7 +468,9 @@ export default function Portfolio() {
                     <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
                     <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                   </div>
-                  <div className="ml-4 text-white/60 text-sm font-mono">pratham@engineer:~$</div>
+                  <div className="ml-4 text-white/60 text-sm font-mono">
+                    pratham@engineer:~$
+                  </div>
                 </div>
 
                 <div className="font-mono text-sm space-y-2">
@@ -436,21 +479,36 @@ export default function Portfolio() {
                   </div>
                   <div className="text-white/80 ml-4">{`{`}</div>
                   <div className="text-blue-400 ml-8">
-                    "frontend": <span className="text-yellow-400">["JavaScript", "HTML5", "CSS3"]</span>,
+                    "frontend":{" "}
+                    <span className="text-yellow-400">
+                      ["JavaScript", "HTML5", "CSS3"]
+                    </span>
+                    ,
                   </div>
                   <div className="text-blue-400 ml-8">
-                    "backend": <span className="text-yellow-400">["Python", "Node.js"]</span>,
+                    "backend":{" "}
+                    <span className="text-yellow-400">
+                      ["Python", "Node.js"]
+                    </span>
+                    ,
                   </div>
                   <div className="text-blue-400 ml-8">
                     "interests":{" "}
-                    <span className="text-yellow-400">["FinTech", "Trading Algorithms", "Market Analysis"]</span>,
+                    <span className="text-yellow-400">
+                      ["FinTech", "Trading Algorithms", "Market Analysis"]
+                    </span>
+                    ,
                   </div>
                   <div className="text-blue-400 ml-8">
-                    "passion": <span className="text-green-400">"Building the future of finance"</span>
+                    "passion":{" "}
+                    <span className="text-green-400">
+                      "Building the future of finance"
+                    </span>
                   </div>
                   <div className="text-white/80 ml-4">{`}`}</div>
                   <div className="text-green-400 animate-pulse">
-                    <span className="text-white/60">&gt;</span> <span className="animate-pulse">█</span>
+                    <span className="text-white/60">&gt;</span>{" "}
+                    <span className="animate-pulse">█</span>
                   </div>
                 </div>
               </div>
@@ -464,13 +522,19 @@ export default function Portfolio() {
                         <Activity className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <h3 className="text-2xl font-bold text-white">Technical Proficiency</h3>
-                        <p className="text-white/60">Real-time skill assessment & performance metrics</p>
+                        <h3 className="text-2xl font-bold text-white">
+                          Technical Proficiency
+                        </h3>
+                        <p className="text-white/60">
+                          Real-time skill assessment & performance metrics
+                        </p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-2 bg-green-500/10 border border-green-500/30 rounded-full px-4 py-2">
                       <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                      <span className="text-green-400 text-sm font-medium">Live</span>
+                      <span className="text-green-400 text-sm font-medium">
+                        Live
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -478,9 +542,24 @@ export default function Portfolio() {
                 <div className="p-8">
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {[
-                      { name: "JavaScript", level: 95, icon: Code2, color: "yellow" },
-                      { name: "Python", level: 90, icon: Terminal, color: "blue" },
-                      { name: "Frontend", level: 88, icon: Globe, color: "purple" },
+                      {
+                        name: "JavaScript",
+                        level: 95,
+                        icon: Code2,
+                        color: "yellow",
+                      },
+                      {
+                        name: "Python",
+                        level: 90,
+                        icon: Terminal,
+                        color: "blue",
+                      },
+                      {
+                        name: "Frontend",
+                        level: 88,
+                        icon: Globe,
+                        color: "purple",
+                      },
                       { name: "FinTech", level: 85, icon: Zap, color: "green" },
                     ].map((skill) => (
                       <div key={skill.name} className="group relative">
@@ -493,11 +572,17 @@ export default function Portfolio() {
                           </div>
                           <div className="space-y-2">
                             <div className="flex items-baseline space-x-2">
-                              <span className="text-3xl font-bold text-white">{skill.level}</span>
+                              <span className="text-3xl font-bold text-white">
+                                {skill.level}
+                              </span>
                               <span className="text-lg text-white/80">%</span>
                             </div>
-                            <p className="text-white/80 font-medium">{skill.name}</p>
-                            <p className="text-white/50 text-sm">Expert Level</p>
+                            <p className="text-white/80 font-medium">
+                              {skill.name}
+                            </p>
+                            <p className="text-white/50 text-sm">
+                              Expert Level
+                            </p>
                           </div>
                           <div className="mt-4">
                             <div className="w-full bg-white/10 rounded-full h-2">
@@ -519,7 +604,9 @@ export default function Portfolio() {
                           <Gauge className="w-4 h-4 text-blue-400" />
                         </div>
                         <div>
-                          <p className="text-white font-medium">Performance Score</p>
+                          <p className="text-white font-medium">
+                            Performance Score
+                          </p>
                           <p className="text-blue-400 text-sm">92.5% Overall</p>
                         </div>
                       </div>
@@ -529,7 +616,9 @@ export default function Portfolio() {
                         </div>
                         <div>
                           <p className="text-white font-medium">Growth Rate</p>
-                          <p className="text-green-400 text-sm">+15% This Month</p>
+                          <p className="text-green-400 text-sm">
+                            +15% This Month
+                          </p>
                         </div>
                       </div>
                       <div className="flex items-center space-x-3">
@@ -537,8 +626,12 @@ export default function Portfolio() {
                           <Activity className="w-4 h-4 text-purple-400" />
                         </div>
                         <div>
-                          <p className="text-white font-medium">Active Projects</p>
-                          <p className="text-purple-400 text-sm">8 In Progress</p>
+                          <p className="text-white font-medium">
+                            Active Projects
+                          </p>
+                          <p className="text-purple-400 text-sm">
+                            8 In Progress
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -558,7 +651,8 @@ export default function Portfolio() {
                   </span>
                 </h2>
                 <p className="text-xl text-white/60 max-w-2xl mx-auto">
-                  Innovative solutions built with cutting-edge technologies and modern engineering practices.
+                  Innovative solutions built with cutting-edge technologies and
+                  modern engineering practices.
                 </p>
               </div>
 
@@ -585,10 +679,14 @@ export default function Portfolio() {
                           </h3>
                         </div>
 
-                        <p className="text-lg text-white/70 leading-relaxed">{project.description}</p>
+                        <p className="text-lg text-white/70 leading-relaxed">
+                          {project.description}
+                        </p>
 
                         <div className="space-y-3">
-                          <h4 className="text-white font-semibold text-lg">Tech Stack:</h4>
+                          <h4 className="text-white font-semibold text-lg">
+                            Tech Stack:
+                          </h4>
                           <div className="flex flex-wrap gap-3">
                             {project.tech.map((tech) => (
                               <div
@@ -644,7 +742,8 @@ export default function Portfolio() {
                   </span>
                 </h2>
                 <p className="text-xl text-white/60 max-w-2xl mx-auto">
-                  Current projects in development - building the future one commit at a time.
+                  Current projects in development - building the future one
+                  commit at a time.
                 </p>
               </div>
 
@@ -658,7 +757,9 @@ export default function Portfolio() {
                       <div className="flex items-start justify-between mb-6">
                         <div className="space-y-3">
                           <div className="flex items-center gap-3">
-                            <Badge className={`${getStatusColor(project.status)} px-3 py-1 text-xs font-medium border`}>
+                            <Badge
+                              className={`${getStatusColor(project.status)} px-3 py-1 text-xs font-medium border`}
+                            >
                               {project.status}
                             </Badge>
                             <Badge
@@ -676,16 +777,24 @@ export default function Portfolio() {
                             <Clock className="w-3 h-3" />
                             <span>{project.timeline}</span>
                           </div>
-                          <div className="text-xs text-white/40">{project.lastUpdate}</div>
+                          <div className="text-xs text-white/40">
+                            {project.lastUpdate}
+                          </div>
                         </div>
                       </div>
 
-                      <p className="text-white/70 mb-6 leading-relaxed">{project.description}</p>
+                      <p className="text-white/70 mb-6 leading-relaxed">
+                        {project.description}
+                      </p>
 
                       <div className="mb-6">
                         <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm font-medium text-white/80">Progress</span>
-                          <span className="text-sm font-bold text-blue-400">{project.progress}%</span>
+                          <span className="text-sm font-medium text-white/80">
+                            Progress
+                          </span>
+                          <span className="text-sm font-bold text-blue-400">
+                            {project.progress}%
+                          </span>
                         </div>
                         <div className="w-full bg-white/10 rounded-full h-2">
                           <div
@@ -696,7 +805,9 @@ export default function Portfolio() {
                       </div>
 
                       <div className="mb-6">
-                        <h4 className="text-sm font-semibold text-white/80 mb-3">Tech Stack</h4>
+                        <h4 className="text-sm font-semibold text-white/80 mb-3">
+                          Tech Stack
+                        </h4>
                         <div className="flex flex-wrap gap-2">
                           {project.tech.map((tech) => (
                             <span
@@ -713,16 +824,24 @@ export default function Portfolio() {
                         <div className="bg-black/20 rounded-xl p-4 border border-white/10">
                           <div className="flex items-center gap-2 mb-2">
                             <Users className="w-4 h-4 text-blue-400" />
-                            <span className="text-sm font-medium text-white/80">Team Size</span>
+                            <span className="text-sm font-medium text-white/80">
+                              Team Size
+                            </span>
                           </div>
-                          <div className="text-2xl font-bold text-blue-400">{project.teamSize}</div>
+                          <div className="text-2xl font-bold text-blue-400">
+                            {project.teamSize}
+                          </div>
                         </div>
                         <div className="bg-black/20 rounded-xl p-4 border border-white/10">
                           <div className="flex items-center gap-2 mb-2">
                             <GitBranch className="w-4 h-4 text-green-400" />
-                            <span className="text-sm font-medium text-white/80">Commits</span>
+                            <span className="text-sm font-medium text-white/80">
+                              Commits
+                            </span>
                           </div>
-                          <div className="text-2xl font-bold text-green-400">{project.commits}</div>
+                          <div className="text-2xl font-bold text-green-400">
+                            {project.commits}
+                          </div>
                         </div>
                       </div>
 
@@ -754,10 +873,13 @@ export default function Portfolio() {
 
               <div className="mt-16 text-center">
                 <div className="bg-gradient-to-br from-slate-900/50 to-slate-800/50 backdrop-blur-xl border border-white/10 rounded-3xl p-12">
-                  <h3 className="text-3xl font-bold text-white mb-4">Want to Collaborate?</h3>
+                  <h3 className="text-3xl font-bold text-white mb-4">
+                    Want to Collaborate?
+                  </h3>
                   <p className="text-white/70 mb-8 max-w-2xl mx-auto">
-                    I'm always looking for talented developers, designers, and innovators to join these exciting
-                    projects. Let's build something amazing together!
+                    I'm always looking for talented developers, designers, and
+                    innovators to join these exciting projects. Let's build
+                    something amazing together!
                   </p>
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <Button className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105">
@@ -786,18 +908,22 @@ export default function Portfolio() {
                   </span>
                 </h2>
                 <p className="text-xl text-white/60">
-                  Ready to build something extraordinary? Let's discuss your next project.
+                  Ready to build something extraordinary? Let's discuss your
+                  next project.
                 </p>
               </div>
 
               <div className="grid lg:grid-cols-2 gap-16">
                 <div className="space-y-8">
                   <div>
-                    <h3 className="text-2xl font-bold text-white mb-6">Get In Touch</h3>
+                    <h3 className="text-2xl font-bold text-white mb-6">
+                      Get In Touch
+                    </h3>
                     <p className="text-white/70 leading-relaxed mb-8">
-                      I'm always excited to discuss new opportunities, innovative projects, and potential
-                      collaborations. Whether you have a specific project in mind or just want to connect, I'd love to
-                      hear from you.
+                      I'm always excited to discuss new opportunities,
+                      innovative projects, and potential collaborations. Whether
+                      you have a specific project in mind or just want to
+                      connect, I'd love to hear from you.
                     </p>
                   </div>
 
@@ -811,7 +937,9 @@ export default function Portfolio() {
                       </div>
                       <div>
                         <div className="text-white font-medium">Email</div>
-                        <div className="text-white/60 text-sm">pratham@example.com</div>
+                        <div className="text-white/60 text-sm">
+                          pratham@example.com
+                        </div>
                       </div>
                     </a>
 
@@ -824,7 +952,9 @@ export default function Portfolio() {
                       </div>
                       <div>
                         <div className="text-white font-medium">LinkedIn</div>
-                        <div className="text-white/60 text-sm">Connect professionally</div>
+                        <div className="text-white/60 text-sm">
+                          Connect professionally
+                        </div>
                       </div>
                     </a>
 
@@ -837,7 +967,9 @@ export default function Portfolio() {
                       </div>
                       <div>
                         <div className="text-white font-medium">GitHub</div>
-                        <div className="text-white/60 text-sm">View my code</div>
+                        <div className="text-white/60 text-sm">
+                          View my code
+                        </div>
                       </div>
                     </a>
                   </div>
@@ -847,7 +979,10 @@ export default function Portfolio() {
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid md:grid-cols-2 gap-6">
                       <div>
-                        <label htmlFor="name" className="block text-white font-medium mb-2">
+                        <label
+                          htmlFor="name"
+                          className="block text-white font-medium mb-2"
+                        >
                           Name
                         </label>
                         <input
@@ -862,7 +997,10 @@ export default function Portfolio() {
                         />
                       </div>
                       <div>
-                        <label htmlFor="email" className="block text-white font-medium mb-2">
+                        <label
+                          htmlFor="email"
+                          className="block text-white font-medium mb-2"
+                        >
                           Email
                         </label>
                         <input
@@ -879,7 +1017,10 @@ export default function Portfolio() {
                     </div>
 
                     <div>
-                      <label htmlFor="projectType" className="block text-white font-medium mb-2">
+                      <label
+                        htmlFor="projectType"
+                        className="block text-white font-medium mb-2"
+                      >
                         Project Type
                       </label>
                       <select
@@ -892,10 +1033,16 @@ export default function Portfolio() {
                         <option value="" className="bg-slate-800">
                           Select project type
                         </option>
-                        <option value="web-development" className="bg-slate-800">
+                        <option
+                          value="web-development"
+                          className="bg-slate-800"
+                        >
                           Web Development
                         </option>
-                        <option value="system-architecture" className="bg-slate-800">
+                        <option
+                          value="system-architecture"
+                          className="bg-slate-800"
+                        >
                           System Architecture
                         </option>
                         <option value="ai-ml" className="bg-slate-800">
@@ -914,7 +1061,10 @@ export default function Portfolio() {
                     </div>
 
                     <div>
-                      <label htmlFor="message" className="block text-white font-medium mb-2">
+                      <label
+                        htmlFor="message"
+                        className="block text-white font-medium mb-2"
+                      >
                         Message
                       </label>
                       <textarea
@@ -972,23 +1122,25 @@ export default function Portfolio() {
                 <div className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-2">
                   PRATHAM
                 </div>
-                <p className="text-white/60">Building the future, one line of code at a time.</p>
+                <p className="text-white/60">
+                  Building the future, one line of code at a time.
+                </p>
               </div>
               <div className="flex space-x-6">
                 <a
-                  href="https://github.com/pratham"
+                  href="https://github.com/Pratham-The-Warrior"
                   className="w-12 h-12 bg-white/10 border border-white/20 rounded-xl flex items-center justify-center hover:bg-white/20 hover:border-white/40 transition-all duration-300 group"
                 >
                   <Github className="w-5 h-5 text-white/70 group-hover:text-white" />
                 </a>
                 <a
-                  href="https://linkedin.com/in/pratham"
+                  href="https://www.linkedin.com/in/pratham-sarda-8a6a88318?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"
                   className="w-12 h-12 bg-white/10 border border-white/20 rounded-xl flex items-center justify-center hover:bg-white/20 hover:border-white/40 transition-all duration-300 group"
                 >
                   <Linkedin className="w-5 h-5 text-white/70 group-hover:text-white" />
                 </a>
                 <a
-                  href="mailto:pratham@example.com"
+                  href="prathamsarda1234@gmail.com"
                   className="w-12 h-12 bg-white/10 border border-white/20 rounded-xl flex items-center justify-center hover:bg-white/20 hover:border-white/40 transition-all duration-300 group"
                 >
                   <Mail className="w-5 h-5 text-white/70 group-hover:text-white" />
@@ -1002,5 +1154,5 @@ export default function Portfolio() {
         </footer>
       </div>
     </ClickSpark>
-  )
+  );
 }
